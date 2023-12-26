@@ -1,0 +1,15 @@
+- hosts: winserver19
+  gather_facts: true
+  tasks:
+    - name: Mostrar información del sistema
+      debug:
+        var: ansible_distribution
+    - name:
+      win_ping:
+      when: >
+        ansible_distribution.find("Microsoft Windows Server 2022") != -1
+        or
+        ansible_distribution.find("Microsoft Windows Server 2018") != -1
+
+      
+      

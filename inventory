@@ -1,0 +1,13 @@
+winserver19 ansible_host=192.168.50.20
+winserver16 ansible_host=192.168.50.10
+[windows]
+winserver16
+winserver19
+[windows:vars]
+ansible_user=ansible
+ansible_password=password
+ansible_port=5986
+ansible_connection=winrm 
+ansible_winrm_transport=basic
+ansible_winrm_server_cert_validation=ignore
+#ansible_python_interpreter=C:\Program Files\Python311\python.exe
