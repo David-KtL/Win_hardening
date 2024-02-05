@@ -27,13 +27,8 @@
       script: |
        (Get-CimInstance -ClassName Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
     register: last_reboot
+    changed_when: false
 
   - name: Imprimir sql_services
     ansible.builtin.debug:
-        msg: "{{ last_reboot.output }}"
-
-
-
-
-
- 
+        msg: "{{ last_reboot.output }}" 
