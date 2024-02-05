@@ -1,0 +1,173 @@
+{
+    "changed": false,
+    "exists": true,
+    "failed": false,
+    "services": [
+        {
+            "checkpoint": 0,
+            "controls_accepted": [],
+            "dependencies": [
+                "MSSQL$SQLEXPRESS"
+            ],
+            "dependency_of": [],
+            "description": "Executes jobs, monitors SQL Server, fires alerts, and allows automation of some administrative tasks.",
+            "desktop_interact": false,
+            "display_name": "SQL Server Agent (SQLEXPRESS)",
+            "error_control": "normal",
+            "failure_actions": [],
+            "failure_actions_on_non_crash_failure": false,
+            "failure_command": null,
+            "failure_reboot_msg": null,
+            "failure_reset_period_sec": 0,
+            "launch_protection": "none",
+            "load_order_group": "",
+            "name": "SQLAgent$SQLEXPRESS",
+            "path": "\"C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQLEXPRESS\\MSSQL\\Binn\\SQLAGENT.EXE\" -i SQLEXPRESS",
+            "pre_shutdown_timeout_ms": 10000,
+            "preferred_node": null,
+            "process_id": 0,
+            "required_privileges": [],
+            "service_exit_code": 0,
+            "service_flags": [],
+            "service_type": "win32_own_process",
+            "sid_info": "unrestricted",
+            "start_mode": "disabled",
+            "state": "stopped",
+            "triggers": [],
+            "username": "NT AUTHORITY\\NETWORKSERVICE",
+            "wait_hint_ms": 0,
+            "win32_exit_code": 1077
+        },
+        {
+            "checkpoint": 0,
+            "controls_accepted": [],
+            "dependencies": [],
+            "dependency_of": [],
+            "description": "Provides SQL Server connection information to client computers.",
+            "desktop_interact": false,
+            "display_name": "SQL Server Browser",
+            "error_control": "normal",
+            "failure_actions": [
+                {
+                    "delay_ms": 60000,
+                    "type": "restart"
+                },
+                {
+                    "delay_ms": 60000,
+                    "type": "restart"
+                },
+                {
+                    "delay_ms": 60000,
+                    "type": "restart"
+                }
+            ],
+            "failure_actions_on_non_crash_failure": false,
+            "failure_command": null,
+            "failure_reboot_msg": null,
+            "failure_reset_period_sec": 86400,
+            "launch_protection": "none",
+            "load_order_group": "",
+            "name": "SQLBrowser",
+            "path": "\"C:\\Program Files (x86)\\Microsoft SQL Server\\90\\Shared\\sqlbrowser.exe\"",
+            "pre_shutdown_timeout_ms": 10000,
+            "preferred_node": null,
+            "process_id": 0,
+            "required_privileges": [],
+            "service_exit_code": 0,
+            "service_flags": [],
+            "service_type": "win32_own_process",
+            "sid_info": "unrestricted",
+            "start_mode": "disabled",
+            "state": "stopped",
+            "triggers": [],
+            "username": "NT AUTHORITY\\LOCALSERVICE",
+            "wait_hint_ms": 0,
+            "win32_exit_code": 1077
+        },
+        {
+            "checkpoint": 0,
+            "controls_accepted": [
+                "stop",
+                "shutdown"
+            ],
+            "dependencies": [],
+            "dependency_of": [],
+            "description": "CEIP service for Sql server ",
+            "desktop_interact": false,
+            "display_name": "SQL Server CEIP service (SQLEXPRESS)",
+            "error_control": "normal",
+            "failure_actions": [
+                {
+                    "delay_ms": 60000,
+                    "type": "restart"
+                },
+                {
+                    "delay_ms": 60000,
+                    "type": "restart"
+                },
+                {
+                    "delay_ms": 0,
+                    "type": "none"
+                }
+            ],
+            "failure_actions_on_non_crash_failure": false,
+            "failure_command": null,
+            "failure_reboot_msg": null,
+            "failure_reset_period_sec": 600,
+            "launch_protection": "none",
+            "load_order_group": "",
+            "name": "SQLTELEMETRY$SQLEXPRESS",
+            "path": "\"C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQLEXPRESS\\MSSQL\\Binn\\sqlceip.exe\" -Service SQLEXPRESS",
+            "pre_shutdown_timeout_ms": 10000,
+            "preferred_node": null,
+            "process_id": 2696,
+            "required_privileges": [],
+            "service_exit_code": 0,
+            "service_flags": [],
+            "service_type": "win32_own_process",
+            "sid_info": "unrestricted",
+            "start_mode": "auto",
+            "state": "started",
+            "triggers": [],
+            "username": "NT Service\\SQLTELEMETRY$SQLEXPRESS",
+            "wait_hint_ms": 0,
+            "win32_exit_code": 0
+        },
+        {
+            "checkpoint": 0,
+            "controls_accepted": [
+                "stop",
+                "shutdown"
+            ],
+            "dependencies": [],
+            "dependency_of": [],
+            "description": "Provides the interface to backup/restore Microsoft SQL server through the Windows VSS infrastructure.",
+            "desktop_interact": false,
+            "display_name": "SQL Server VSS Writer",
+            "error_control": "normal",
+            "failure_actions": [],
+            "failure_actions_on_non_crash_failure": false,
+            "failure_command": null,
+            "failure_reboot_msg": null,
+            "failure_reset_period_sec": 0,
+            "launch_protection": "none",
+            "load_order_group": "",
+            "name": "SQLWriter",
+            "path": "\"C:\\Program Files\\Microsoft SQL Server\\90\\Shared\\sqlwriter.exe\"",
+            "pre_shutdown_timeout_ms": 10000,
+            "preferred_node": null,
+            "process_id": 4388,
+            "required_privileges": [],
+            "service_exit_code": 0,
+            "service_flags": [],
+            "service_type": "win32_own_process",
+            "sid_info": "unrestricted",
+            "start_mode": "auto",
+            "state": "started",
+            "triggers": [],
+            "username": "NT AUTHORITY\\SYSTEM",
+            "wait_hint_ms": 0,
+            "win32_exit_code": 0
+        }
+    ]
+}
