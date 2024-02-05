@@ -1,0 +1,39 @@
+- name: Reinicio de servidores de bases de datos
+  hosts: winserver19
+  gather_facts: false
+  tasks:
+  - name: Obtener servicios de SQL Server O podemos ver que devulve en la variable dependencias de MSSQLSERVER
+    ansible.windows.win_service_info:
+      name: '*SQL*'
+    register: sql_services
+
+  - name: Imprimir tipo
+    ansible.builtin.debug:
+      msg: "{{ sql_services | type_debug }}"
+
+  - name: Obtener estado de los servicios
+    set_fact: 
+      services_status: "{{ sql_services | json_query(query) }}"
+    vars:
+      query: "services[*].{name: name, diplay_name: display_name, state: state}"
+
+  - name: Imprimir sql_services
+    ansible.builtin.debug:
+        msg: "Name: {{ item.name }}"
+    loop: "{{ services_status }}"
+  
+  - name: Obtener fecha ultimo Reinicio
+    ansible.windows.win_powershell:
+      script: |
+       (Get-CimInstance -ClassName Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
+    register: last_reboot
+
+  - name: Imprimir sql_services
+    ansible.builtin.debug:
+        msg: "{{ last_reboot.output }}"
+
+
+
+
+
+ 
