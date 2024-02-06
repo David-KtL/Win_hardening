@@ -1,0 +1,17 @@
+- hosts: winserver19
+  gather_facts: false
+  tasks:
+  - name: Ejecutar consulta SQL
+    ansible.windows.win_powershell:
+      script: |
+        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ sql_query }}' -b -E -W -h-1
+    vars:
+      sql_server: localhost\SQLEXPRESS
+      sql_db: MASTER
+      sql_query: "select SERVERPROPERTY(''ComputerNamePhysicalNetBIOS'') as [Node]" 
+    register: query 
+    failed_when: query.error 
+
+  - name: Debug query
+    debug:
+        msg: "{{ query }}"
