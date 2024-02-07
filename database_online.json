@@ -1,0 +1,80 @@
+{
+    "changed": true,
+    "debug": [],
+    "error": [],
+    "failed": false,
+    "failed_when_result": false,
+    "host_err": "",
+    "host_out": "",
+    "information": [],
+    "output": [
+        "master ONLINE",
+        "tempdb ONLINE",
+        "model ONLINE",
+        "msdb ONLINE",
+        "test ONLINE",
+        "",
+        "(5 rows affected)"
+    ],
+    "result": {},
+    "verbose": [],
+    "warning": []
+}
+
+
+
+{
+    "changed": true,
+    "debug": [],
+    "error": [],
+    "failed": false,
+    "failed_when_result": false,
+    "host_err": "",
+    "host_out": "",
+    "information": [],
+    "output": [
+        "2024-02-03 09:47:12.663",
+        "",
+        "(1 rows affected)"
+    ],
+    "result": {},
+    "verbose": [],
+    "warning": []
+}
+
+{
+    "changed": true,
+    "debug": [],
+    "error": [],
+    "failed": false,
+    "failed_when_result": false,
+    "host_err": "",
+    "host_out": "",
+    "information": [],
+    "output": [
+        "",
+        "(0 rows affected)"
+    ],
+    "result": {},
+    "verbose": [],
+    "warning": []
+}
+
+{
+    "changed": true,
+    "debug": [],
+    "error": [],
+    "failed": false,
+    "failed_when_result": false,
+    "host_err": "",
+    "host_out": "",
+    "information": [],
+    "output": [
+        "WIN-JTLFVBT3ELK",
+        "",
+        "(1 rows affected)"
+    ],
+    "result": {},
+    "verbose": [],
+    "warning": []
+}
