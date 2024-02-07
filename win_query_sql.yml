@@ -9,6 +9,24 @@
       sql_server: localhost\SQLEXPRESS
       sql_db: MASTER
       sql_query: "select SERVERPROPERTY(''ComputerNamePhysicalNetBIOS'') as [Node]" 
+      sql_query1: |
+        select e.session_id as spid, DB_NAME(e.database_id) as db, e.command, e.status, s.program_name
+        from sys.dm_exec_requests as e
+        inner join sys.dm_exec_sessions as s on e.session_id = s.session_id
+        where e.session_id <>  @@spid
+        and e.session_id > 50
+        and DB_NAME(e.database_id) <> ''master''
+        and s.login_name <> ''NT AUTHORITY\SYSTEM'';
+      sql_query2: |
+        if(substring(@@version,1,35)like ''%2000%'' or substring(@@version,1,35) like ''%2005%'')
+        exec sp_sqlexec ''select min(login_time) as Date from sysprocesses;''
+        else
+        exec sp_sqlexec ''SELECT sqlserver_start_time as Date FROM sys.dm_os_sys_info;''
+      sql_query3: |
+        if(substring(@@version,1,35) like ''%2000%'')
+        select name, DATABASEPROPERTYEX(name, ''Status'') as state_desc from master.dbo.sysdatabases
+        else
+        select name, state_desc from sys.databases;
     register: query 
     failed_when: query.error 
 
