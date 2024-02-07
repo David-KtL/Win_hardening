@@ -21,6 +21,13 @@
     ansible.builtin.debug:
         msg: "Name: {{ item.name }}"
     loop: "{{ services_status }}"
+    when: "item.name != 'MSSQL$SQLEXPRESS'"
+    
+#  - name: Detener servicios
+#    ansible.windows.win_service:
+#      name: "{{ item.name }}"
+#      state: stopped
+#    loop: "{{ services_status }}"
   
   - name: Obtener fecha ultimo Reinicio
     ansible.windows.win_powershell:
