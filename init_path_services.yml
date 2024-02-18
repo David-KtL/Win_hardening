@@ -1,0 +1,29 @@
+    - name: Ensure fragments directory is empty
+      ansible.builtin.file:
+         state: absent
+         path: "./reports/fragments/*"
+      delegate_to: localhost
+      run_once: true
+      
+    - name: Ensure Reports directories exist
+      ansible.builtin.file:
+         state: directory
+         path: "./reports/fragments/"
+      delegate_to: localhost
+      run_once: true 
+    
+    - name: Ensure reports services.csv is empty
+      ansible.builtin.file:
+         state: absent
+         path: "./reports/services.csv"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Append the header to the csv file 
+      ansible.builtin.lineinfile: 
+        dest: "./reports/services.csv"
+        insertbefore: BOF 
+        line: "Hostname;TimeReboot;Sercive;Status"
+        create: true
+      delegate_to: localhost
+      run_once: true

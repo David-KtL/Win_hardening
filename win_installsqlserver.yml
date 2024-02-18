@@ -1,0 +1,5 @@
+- hosts: winserver19
+  gather_facts: false
+  roles:
+    - ansible-role-windows-mssql
+

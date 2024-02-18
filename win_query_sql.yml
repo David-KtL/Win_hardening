@@ -1,35 +1,93 @@
 - hosts: winserver19
   gather_facts: false
+  vars:
+    sql_server: localhost\SQLEXPRESS
+    sql_db: MASTER
+    query_nombreNodo: "select SERVERPROPERTY(''ComputerNamePhysicalNetBIOS'') as [Node]" 
+    query_sesionesActivas: |
+          select e.session_id as spid, DB_NAME(e.database_id) as db, e.command, e.status, s.program_name
+          from sys.dm_exec_requests as e
+          inner join sys.dm_exec_sessions as s on e.session_id = s.session_id
+          where e.session_id <>  @@spid
+          and e.session_id > 50
+          and DB_NAME(e.database_id) <> ''master''
+          and s.login_name <> ''NT AUTHORITY\SYSTEM'';
+    query_timeStartSql: |
+          if(substring(@@version,1,35)like ''%2000%'' or substring(@@version,1,35) like ''%2005%'')
+          exec sp_sqlexec ''select min(login_time) as Date from sysprocesses;''
+          else
+          exec sp_sqlexec ''SELECT sqlserver_start_time as Date FROM sys.dm_os_sys_info;''
+    query_statusBdds: |
+          if(substring(@@version,1,35) like ''%2000%'')
+          select name, DATABASEPROPERTYEX(name, ''Status'') as state_desc from master.dbo.sysdatabases
+          else
+          select name, state_desc from sys.databases order by name;
+  pre_tasks:
+  - name: Ensure fragments directory is empty
+    ansible.builtin.file:
+      state: absent
+      path: "./reports/fragments/"
+    delegate_to: localhost
+    run_once: true
+
+  - name: Ensure Reports directories exist
+    ansible.builtin.file:
+      state: directory
+      path: "./reports/fragments/"
+    delegate_to: localhost
+    run_once: true
+  
+  - name: Append the header to the csv file 
+    ansible.builtin.lineinfile: 
+      dest: "./reports/fragments/{{ inventory_hostname }}.csv"
+      insertbefore: BOF 
+      line: "nombreNodo;TimeStartSql;[Status BDDs]"
+      create: true
+    delegate_to: localhost
+    run_once: true
+
   tasks:
-  - name: Ejecutar consulta SQL
+  - name: Obtener Nombre del Nodo
     ansible.windows.win_powershell:
       script: |
-        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ sql_query }}' -b -E -W -h-1
-    vars:
-      sql_server: localhost\SQLEXPRESS
-      sql_db: MASTER
-      sql_query: "select SERVERPROPERTY(''ComputerNamePhysicalNetBIOS'') as [Node]" 
-      sql_query1: |
-        select e.session_id as spid, DB_NAME(e.database_id) as db, e.command, e.status, s.program_name
-        from sys.dm_exec_requests as e
-        inner join sys.dm_exec_sessions as s on e.session_id = s.session_id
-        where e.session_id <>  @@spid
-        and e.session_id > 50
-        and DB_NAME(e.database_id) <> ''master''
-        and s.login_name <> ''NT AUTHORITY\SYSTEM'';
-      sql_query2: |
-        if(substring(@@version,1,35)like ''%2000%'' or substring(@@version,1,35) like ''%2005%'')
-        exec sp_sqlexec ''select min(login_time) as Date from sysprocesses;''
-        else
-        exec sp_sqlexec ''SELECT sqlserver_start_time as Date FROM sys.dm_os_sys_info;''
-      sql_query3: |
-        if(substring(@@version,1,35) like ''%2000%'')
-        select name, DATABASEPROPERTYEX(name, ''Status'') as state_desc from master.dbo.sysdatabases
-        else
-        select name, state_desc from sys.databases;
-    register: query 
-    failed_when: query.error 
+        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ query_nombreNodo }}' -b -E -W -h-1    
+    register: nombreNodo
+    failed_when: nombreNodo.error 
 
-  - name: Debug query
-    debug:
-        msg: "{{ query }}"
+  - name: Obtener Sesiones Activas SQL
+    ansible.windows.win_powershell:
+      script: |
+        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ query_sesionesActivas }}' -b -E -W -h-1    
+    register: sesionesActivas 
+    failed_when: sesionesActivas.error 
+
+  - name: Obtener Estado de Bases De Datos
+    ansible.windows.win_powershell:
+      script: |
+        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ query_statusBdds }}' -b -E -W -h-1    
+    register: sqlStatusBdd 
+    failed_when: sqlStatusBdd.error 
+
+  - name: Obtener Tiempo de Inicio SQLServer
+    ansible.windows.win_powershell:
+      script: |
+        sqlcmd -S {{ sql_server }} -d {{ sql_db }} -Q '{{ query_timeStartSql }}' -b -E -W -h-1    
+    register: timeStartSql 
+    failed_when: timeStartSql.error 
+
+  - name: Crear archivo con consultas
+    ansible.builtin.lineinfile: 
+      dest: "./reports/fragments/{{ inventory_hostname }}.csv"
+      insertafter: EOF
+      line: "{{ nombreNodo.output[0] }};{{ timeStartSql.output[0] }};[{{ sqlStatusBdd.output | join(',') }}]"
+      create: true
+    delegate_to: localhost
+
+  - name: Crear archivo con consultas
+    ansible.builtin.lineinfile: 
+      dest: "./reports/fragments/{{ inventory_hostname }}.csv"
+      insertafter: EOF
+      line: "{{ nombreNodo.output[0] }};{{ timeStartSql.output[0] }}-1;[{{ sqlStatusBdd.output | join(',') }}]"
+      create: true
+    delegate_to: localhost
+  

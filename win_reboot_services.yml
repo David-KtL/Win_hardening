@@ -1,33 +1,22 @@
+---
 - name: Reinicio de servidores de bases de datos
   hosts: winserver19
   gather_facts: false
+
+  pre_tasks:
+  - include_tasks: init_path_services.yml
+
   tasks:
-  - name: Obtener servicios de SQL Server O podemos ver que devulve en la variable dependencias de MSSQLSERVER
+  - name: Obtener servicios de SQL Server 
     ansible.windows.win_service_info:
       name: '*SQL*'
     register: sql_services
-
-  - name: Imprimir tipo
-    ansible.builtin.debug:
-      msg: "{{ sql_services | type_debug }}"
 
   - name: Obtener estado de los servicios
     set_fact: 
       services_status: "{{ sql_services | json_query(query) }}"
     vars:
       query: "services[*].{name: name, diplay_name: display_name, state: state}"
-
-  - name: Imprimir sql_services
-    ansible.builtin.debug:
-        msg: "Name: {{ item.name }}"
-    loop: "{{ services_status }}"
-    when: "item.name != 'MSSQL$SQLEXPRESS'"
-    
-#  - name: Detener servicios
-#    ansible.windows.win_service:
-#      name: "{{ item.name }}"
-#      state: stopped
-#    loop: "{{ services_status }}"
   
   - name: Obtener fecha ultimo Reinicio
     ansible.windows.win_powershell:
@@ -36,6 +25,24 @@
     register: last_reboot
     changed_when: false
 
+  - name: Append the items to the csv file
+    ansible.builtin.lineinfile: 
+      dest: "./reports/services.csv"
+      insertafter: EOF
+      line: "{{ inventory_hostname }};{{ last_reboot.output[0] }};{{ item.name }};{{ item.state }}" 
+    delegate_to: localhost
+    loop: "{{ services_status }}"
+      
+  
+#  - name: Detener servicios
+#    ansible.windows.win_service:
+#      name: "{{ item.name }}"
+#      state: stopped
+#    loop: "{{ services_status }}"
+#    when: "'MSSQL' not in item.name"
+
   - name: Imprimir sql_services
     ansible.builtin.debug:
-        msg: "{{ last_reboot.output }}" 
+        msg: "Name: {{ item.name }}"
+    loop: "{{ services_status }}"
+    when: "'MSSQL' not in item.name"
